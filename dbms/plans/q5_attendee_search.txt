@@ -1,0 +1,33 @@
+                                                                      QUERY PLAN                                                                       
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=28.00..28.00 rows=1 width=64) (actual time=0.054..0.059 rows=0 loops=1)
+   Buffers: shared hit=6
+   InitPlan 1 (returns $0)
+     ->  Limit  (cost=0.00..0.04 rows=1 width=16) (actual time=0.014..0.015 rows=1 loops=1)
+           Buffers: shared hit=1
+           ->  Seq Scan on "Event"  (cost=0.00..9.00 rows=200 width=16) (actual time=0.014..0.014 rows=1 loops=1)
+                 Buffers: shared hit=1
+   ->  Sort  (cost=27.95..27.96 rows=1 width=64) (actual time=0.053..0.054 rows=0 loops=1)
+         Sort Key: b."createdAt" DESC
+         Sort Method: quicksort  Memory: 25kB
+         Buffers: shared hit=6
+         ->  Nested Loop  (cost=4.59..27.94 rows=1 width=64) (actual time=0.029..0.030 rows=0 loops=1)
+               Buffers: shared hit=3
+               ->  Bitmap Heap Scan on "Booking" b  (cost=4.30..11.31 rows=2 width=44) (actual time=0.029..0.029 rows=0 loops=1)
+                     Recheck Cond: (("eventId" = $0) AND (status = 'CONFIRMED'::"BookingStatus"))
+                     Buffers: shared hit=3
+                     ->  Bitmap Index Scan on "Booking_eventId_status_idx"  (cost=0.00..4.30 rows=2 width=0) (actual time=0.028..0.028 rows=0 loops=1)
+                           Index Cond: (("eventId" = $0) AND (status = 'CONFIRMED'::"BookingStatus"))
+                           Buffers: shared hit=3
+               ->  Memoize  (cost=0.29..8.30 rows=1 width=52) (never executed)
+                     Cache Key: b."userId"
+                     Cache Mode: logical
+                     ->  Index Scan using "User_pkey" on "User" u  (cost=0.28..8.29 rows=1 width=52) (never executed)
+                           Index Cond: (id = b."userId")
+                           Filter: ((name)::text ~~* '%a%'::text)
+ Planning:
+   Buffers: shared hit=434
+ Planning Time: 2.117 ms
+ Execution Time: 0.143 ms
+(29 rows)
+

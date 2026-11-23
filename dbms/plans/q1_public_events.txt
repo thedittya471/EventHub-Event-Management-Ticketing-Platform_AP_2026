@@ -1,0 +1,24 @@
+                                                                         QUERY PLAN                                                                          
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=1.43..22.24 rows=20 width=66) (actual time=0.068..0.072 rows=20 loops=1)
+   Buffers: shared hit=74
+   ->  Incremental Sort  (cost=1.43..209.52 rows=200 width=66) (actual time=0.068..0.069 rows=20 loops=1)
+         Sort Key: e."startAt", e.id
+         Presorted Key: e."startAt"
+         Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 27kB  Peak Memory: 27kB
+         Buffers: shared hit=74
+         ->  Nested Loop  (cost=0.42..200.52 rows=200 width=66) (actual time=0.017..0.049 rows=21 loops=1)
+               Buffers: shared hit=65
+               ->  Index Scan using "Event_status_startAt_idx" on "Event" e  (cost=0.15..30.02 rows=200 width=70) (actual time=0.010..0.015 rows=21 loops=1)
+                     Index Cond: ((status = 'PUBLISHED'::"EventStatus") AND ("startAt" >= now()))
+                     Filter: ("hiddenAt" IS NULL)
+                     Buffers: shared hit=2
+               ->  Index Scan using "User_pkey" on "User" u  (cost=0.28..0.85 rows=1 width=28) (actual time=0.001..0.001 rows=1 loops=21)
+                     Index Cond: (id = e."organizerId")
+                     Buffers: shared hit=63
+ Planning:
+   Buffers: shared hit=221
+ Planning Time: 0.954 ms
+ Execution Time: 0.107 ms
+(20 rows)
+

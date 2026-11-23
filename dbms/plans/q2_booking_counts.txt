@@ -1,0 +1,24 @@
+                                                                               QUERY PLAN                                                                               
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ HashAggregate  (cost=67.15..68.99 rows=184 width=24) (actual time=0.629..0.655 rows=120 loops=1)
+   Group Key: b."eventId"
+   Batches: 1  Memory Usage: 40kB
+   Buffers: shared hit=14
+   ->  Hash Join  (cost=12.27..64.75 rows=480 width=16) (actual time=0.208..0.460 rows=480 loops=1)
+         Hash Cond: (b."eventId" = e.id)
+         Buffers: shared hit=14
+         ->  Index Only Scan using "Booking_one_active_per_user_event" on "Booking" b  (cost=0.27..51.47 rows=480 width=16) (actual time=0.015..0.110 rows=480 loops=1)
+               Heap Fetches: 0
+               Buffers: shared hit=7
+         ->  Hash  (cost=9.50..9.50 rows=200 width=16) (actual time=0.181..0.181 rows=200 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 18kB
+               Buffers: shared hit=7
+               ->  Seq Scan on "Event" e  (cost=0.00..9.50 rows=200 width=16) (actual time=0.010..0.127 rows=200 loops=1)
+                     Filter: (status = 'PUBLISHED'::"EventStatus")
+                     Buffers: shared hit=7
+ Planning:
+   Buffers: shared hit=309
+ Planning Time: 2.911 ms
+ Execution Time: 0.796 ms
+(20 rows)
+
